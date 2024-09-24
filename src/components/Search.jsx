@@ -1,10 +1,9 @@
-
 import { Button, Dialog, Skeleton } from "@radix-ui/themes";
-import { MessageCircleQuestion, SearchIcon } from "lucide-react";
+import { FilmIcon, SearchIcon, XIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-
+import useThemeStore from "../store/ThemeStore";
 
 const fetchArticles = async (query) => {
   const api = `${import.meta.env.VITE_MOVIEDB_QUERY}multi?query=${query}`;
@@ -14,17 +13,19 @@ const fetchArticles = async (query) => {
       Authorization: `Bearer ${key}`,
     },
   });
+
   if (!resp.ok) {
     throw new Error('Network response was not okay!');
   }
+
   const data = await resp.json();
-  return data;
+  return data.results;
 };
 
 export default function Search() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search);
-
+  const { isDark } = useThemeStore();
   const { data, isLoading } = useQuery({
     queryKey: ['articles', debouncedSearch],
     queryFn: () => fetchArticles(debouncedSearch),
@@ -52,15 +53,14 @@ export default function Search() {
           <SearchIcon className="h-12 w-12 cursor-pointer" />
         </Button>
       </Dialog.Trigger>
-      <Dialog.Content maxWidth="750px" className="rounded-full">
+      <Dialog.Content maxWidth="750px" className={`${isDark ? "!bg-black/80 !border-0" : "bg-white"}`}>
         <input
           type="text"
           value={search}
           onChange={handleSearchChange}
           placeholder="Search..."
-          className="border p-2 rounded-full flex-1 focus:ring-gray-300 px-4 w-full"
+          className={`border p-2 rounded-full flex-1 focus:ring-gray-300 px-4 w-full ${isDark ? "!bg-black/80 text-white" : "bg-white"}`}
         />
-
         {!search.length ? (
           <div className="flex text-center gap-2 items-center justify-center my-4 text-gray-500">
             <SearchIcon />
@@ -70,29 +70,40 @@ export default function Search() {
           <div>
             {isLoading ? (
               <>
-                <Skeleton className="w-full h-[50px] my-4" />
-                <Skeleton className="w-full h-[50px] my-4" />
-                <Skeleton className="w-full h-[50px] my-4" />
-                <Skeleton className="w-full h-[50px] my-4" />
+                <Skeleton className={`w-full h-[50px] my-4  ${isDark ? "!bg-gray-800 text-white" : ""}`} />
+
+                <Skeleton className={`w-full h-[50px] my-4  ${isDark ? "!bg-gray-800 text-white" : ""}`} />
+                <Skeleton className={`w-full h-[50px] my-4  ${isDark ? "!bg-gray-800 text-white" : ""}`} />
+                <Skeleton className={`w-full h-[50px] my-4  ${isDark ? "!bg-gray-800 text-white" : ""}`} />
               </>
-
-
             ) : (
               data && data.length > 0 ? (
-                data.map((movie, index) => (
-                  <Link to={`/${slugify(movie?.title)}`} key={index}>
-                    <div className="p-2 border-b">
-                      <h3 className="font-semibold">{movie.title}</h3>
-                      <p className="text-gray-600">{movie.description}</p>
+                data.map((item, index) => (
+                  <Link to={`${item.id}`} key={index} className="block">
+                    <div className="flex items-center gap-4 p-4 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg my-4 transition">
+                      {item.poster_path ? (
+                        <img
+                          src={`${import.meta.env.VITE_MOVIEDB_IMAGES}${item.poster_path}`}
+                          alt={item.name || item.title}
+                          className="w-[120px] h-[120px] object-cover rounded"
+                        />
+                      ) : (
+                        <div className="bg-gray-200 dark:bg-gray-700 w-[80px] h-[120px] flex items-center justify-center rounded">
+                          <FilmIcon className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-gray-800 dark:text-gray-200">{item.name || item.title}</h3>
+                        <p className="text-gray-600 dark:text-gray-400 line-clamp-2">{item.overview}</p>
+                      </div>
                     </div>
                   </Link>
                 ))
               ) : (
-                <div className="flex items-center text-center gap-2 items-center justify-center my-4 text-gray-500">
-                  <MessageCircleQuestion />
-                  <h1>No Movies available, try searching for something else.</h1>
+                <div className="flex items-center text-center gap-2 items-center justify-center my-4 text-gray-500 dark:text-gray-400">
+                  <FilmIcon />
+                  <h1>No results found, try searching for something else.</h1>
                 </div>
-
               )
             )}
           </div>

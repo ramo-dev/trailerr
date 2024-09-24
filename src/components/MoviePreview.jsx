@@ -5,6 +5,7 @@ import { Calendar, Globe, Star, Film, Heart, Play, Info, Bookmark } from "lucide
 import noPhoto from "../assets/nophoto.webp";
 import GoBackBtn from "./GoBackBtn";
 import Loader from "./Loading";
+import useThemeStore from "../store/ThemeStore";
 
 const fetchMovies = async (id) => {
   const api = `${import.meta.env.VITE_MOVIEDB_PREVIEW}${id}`;
@@ -26,6 +27,7 @@ const fetchMovies = async (id) => {
 
 export default function MoviePreview() {
   const { id } = useParams();
+  const { isDark } = useThemeStore();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['MovieTitle', id],
@@ -37,17 +39,22 @@ export default function MoviePreview() {
   }
 
   if (isError) {
-    return <div className="flex justify-center items-center h-screen bg-black text-white">Error Loading Movie</div>;
+    return (
+      <>
+        <GoBackBtn />
+        <div className="flex justify-center items-center text-3xl h-screen bg-black text-white">Error Loading Movie</div>
+      </>
+    );
   }
 
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className={`${isDark ? "bg-black" : "bg-white"} min-h-screen`}>
       <GoBackBtn />
       {data && (
         <div>
           {/* Hero Section */}
           <div className="relative h-screen">
-            <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
+            <div className={`${isDark ? "bg-gradient-to-t from-black absolute inset-0 to-transparent" : "bg-white "} `} />
             <img
               src={
                 data.backdrop_path
@@ -58,11 +65,11 @@ export default function MoviePreview() {
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-14 left-0 p-8 w-full md:w-2/3">
-              <h1 className="text-5xl font-bold mb-4">{data.title}</h1>
-              <p className="text-xl mb-6">{data.tagline}</p>
+              <h1 className={`text-5xl font-bold mb-4 text-white`}>{data.title}</h1>
+              <p className={`text-xl mb-6 text-white`}>{data.tagline}</p>
               <div className="flex space-x-4 mb-6">
                 <button className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
-                  <Bookmark className="mr-2" /> Play
+                  <Bookmark className="mr-2" /> Save
                 </button>
                 <a href="#info">
                   <button className="bg-gray-500 bg-opacity-50 text-white py-2 px-6 rounded flex items-center hover:bg-opacity-70 transition">
@@ -74,7 +81,7 @@ export default function MoviePreview() {
           </div>
 
           {/* Movie Details */}
-          <div className="px-8 py-12" id="info">
+          <div className={`px-8 py-12 ${isDark ? "text-white" : "text-black"}`} id="info">
             <div className="flex flex-col md:flex-row gap-12">
               <div className="md:w-2/3">
                 <p className="text-lg mb-6">{data.overview}</p>
