@@ -48,6 +48,7 @@ export default function MoviePreview() {
   const { isDark } = useThemeStore();
   const [movieTrailer, setMovieTrailer] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['MovieTitle', id],
@@ -57,25 +58,19 @@ export default function MoviePreview() {
   useEffect(() => {
     const fetchTrailer = async () => {
       const trailer = await getMovieTrailer(id);
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         setMovieTrailer(trailer);
-      }, 4000)
+      }, 4000);
+      setTimeoutId(timeout);
     };
     fetchTrailer();
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [id]);
-
-  if (isLoading) {
-    return <Loader />;
-  }
-
-  if (isError) {
-    return (
-      <>
-        <GoBackBtn />
-        <div className="flex justify-center items-center text-3xl h-screen bg-black text-white">Error Loading Movie</div>
-      </>
-    );
-  }
 
   useEffect(() => {
     function detectScreenScroll() {
@@ -90,6 +85,21 @@ export default function MoviePreview() {
 
     return () => window.removeEventListener("scroll", detectScreenScroll)
   }, [])
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (isError) {
+    return (
+      <>
+        <GoBackBtn />
+        <div className="flex justify-center items-center text-3xl h-screen bg-black text-white">Error Loading Movie</div>
+      </>
+    );
+  }
+
+
 
   return (
     <div className={`${isDark ? "bg-black" : "bg-white"} min-h-screen`}>

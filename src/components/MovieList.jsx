@@ -151,13 +151,13 @@ export default function MovieList() {
           </div>
         </div>
       )}
-      <div className={`${isDark ? "bg-black py-10 text-white" : "bg-white py-10"}`} >
+      <div className={`${isDark ? "bg-black py-10 text-white" : "bg-white py-10"} transition-all duration-200 ease-in-out`} >
         <h1 className="text-4xl my-8 md:ms-10 ms-2 font-bold">People are also watching</h1>
         <div className="md:px-10 px-2 mx-auto flex flex-wrap gap-6 w-full">
 
           {data ? data.map((item) => (
             <Link to={`/${item.id}`} key={item.id}>
-              <div className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full`}>
+              <div className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out`}>
                 <img
                   loading="lazy"
                   src={`${import.meta.env.VITE_MOVIEDB_IMAGES}${item.poster_path}`}
