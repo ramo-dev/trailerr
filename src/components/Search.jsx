@@ -25,6 +25,7 @@ const fetchArticles = async (query) => {
 export default function Search() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [sticky, setSticky] = useState(false);
   const { isDark } = useThemeStore();
   const { data, isLoading } = useQuery({
     queryKey: ['articles', debouncedSearch],
@@ -46,6 +47,20 @@ export default function Search() {
     setSearch(e.target.value);
   };
 
+  useEffect(() => {
+    function showOnScroll() {
+      if (window.scrollY > 50) {
+        setSticky(true);
+      } else {
+        setSticky(false);
+      }
+    }
+
+    window.addEventListener("scroll", showOnScroll);
+
+    return () => window.removeEventListener("scroll", showOnScroll);
+  }, []);
+
   return (
     <Dialog.Root>
       <Dialog.Trigger>
@@ -53,13 +68,15 @@ export default function Search() {
           <SearchIcon className="h-12 w-12 cursor-pointer" />
         </Button>
       </Dialog.Trigger>
-      <Dialog.Content maxWidth="750px" className={`${isDark ? "!bg-black/80 !border-0" : "bg-white"}`}>
+      <Dialog.Content
+        maxWidth="750px"
+        className={`${isDark ? "!bg-black/80 !border-0" : "bg-white"} max-h-screen no-scroll`}>
         <input
           type="text"
           value={search}
           onChange={handleSearchChange}
           placeholder="Search..."
-          className={`border p-2 rounded-full flex-1 focus:ring-gray-300 px-4 w-full ${isDark ? "!bg-black/80 text-white" : "bg-white"}`}
+          className={`sticky top-0 border p-2 rounded-full flex-1 focus:ring-gray-300 px-4 w-full ${isDark ? "!bg-black/80 text-white" : "bg-white"}`}
         />
         {!search.length ? (
           <div className="flex text-center gap-2 items-center justify-center my-4 text-gray-500">
