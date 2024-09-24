@@ -3,12 +3,16 @@ import { Button } from "@radix-ui/themes";
 import Search from "./Search";
 import { Link } from "react-router-dom";
 import { FilmIcon, Moon } from "lucide-react";
+import useThemeStore from "../store/ThemeStore";
 
 export default function Navbar() {
 
+  const { isDark, toggleTheme } = useThemeStore();
+
+
 
   return (
-    <nav className="border-b p-4 bg-white sticky top-0 z-10 md:px-10">
+    <nav className={`${isDark ? "bg-black" : "bg-white"}  border-b p-4 bg-white sticky top-0 z-10 md:px-10`}>
       <div className=" mx-auto flex justify-between items-center">
         <Link to="/" className="text-2xl font-semibold">
           <FilmIcon className="h-8 w-8" />

@@ -4,9 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Calendar, ExternalLink, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import noPhoto from "../assets/nophoto.webp";
-import Loader from "./Loading";
 import ErrorBoundary from "./Error";
-import { slugify } from "../utils/slugify";
+import Loader from "./Loading";
 
 const fetchMovies = async () => {
   const api = `${import.meta.env.VITE_MOVIEDB_ENDPOINT}`;
