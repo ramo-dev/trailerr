@@ -79,25 +79,27 @@ export default function Search() {
             ) : (
               data && data.length > 0 ? (
                 data.map((item, index) => (
-                  <Link to={`${item.id}`} key={index} className="block">
-                    <div className="flex items-center gap-4 p-4 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg my-4 transition">
-                      {item.poster_path ? (
-                        <img
-                          src={`${import.meta.env.VITE_MOVIEDB_IMAGES}${item.poster_path}`}
-                          alt={item.name || item.title}
-                          className="w-[120px] h-[120px] object-cover rounded"
-                        />
-                      ) : (
-                        <div className="bg-gray-200 dark:bg-gray-700 w-[80px] h-[120px] flex items-center justify-center rounded">
-                          <FilmIcon className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+                  <Dialog.Close>
+                    <Link to={`${item.id}`} key={index} className="block">
+                      <div className="flex items-center gap-4 p-4 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg my-4 transition">
+                        {item.poster_path ? (
+                          <img
+                            src={`${import.meta.env.VITE_MOVIEDB_IMAGES}${item.poster_path}`}
+                            alt={item.name || item.title}
+                            className="w-[120px] h-[120px] object-cover rounded"
+                          />
+                        ) : (
+                          <div className="bg-gray-200 dark:bg-gray-700 w-[80px] h-[120px] flex items-center justify-center rounded">
+                            <FilmIcon className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+                          </div>
+                        )}
+                        <div>
+                          <h3 className="font-semibold text-gray-800 dark:text-gray-200">{item.name || item.title}</h3>
+                          <p className="text-gray-600 dark:text-gray-400 line-clamp-2">{item.overview}</p>
                         </div>
-                      )}
-                      <div>
-                        <h3 className="font-semibold text-gray-800 dark:text-gray-200">{item.name || item.title}</h3>
-                        <p className="text-gray-600 dark:text-gray-400 line-clamp-2">{item.overview}</p>
                       </div>
-                    </div>
-                  </Link>
+                    </Link>
+                  </Dialog.Close>
                 ))
               ) : (
                 <div className="flex items-center text-center gap-2 items-center justify-center my-4 text-gray-500 dark:text-gray-400">

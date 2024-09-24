@@ -27,8 +27,28 @@ const fetchMovies = async () => {
   return data.results;
 };
 
+async function getMovieTrailer(id) {
+  const trailerApi = `${import.meta.env.VITE_MOVIEDB_VIDEOS}${id}/videos`;
+  const key = import.meta.env.VITE_MOVIEDB_API_KEY;
+
+  try {
+    const resp = await fetch(trailerApi, {
+      headers: {
+        Authorization: `Bearer ${key}`,
+      },
+    });
+    const data = await resp.json();
+    return data.results.find((video) => video.type === 'Trailer');
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+
 export default function MovieList() {
   const [randomMovie, setRandomMovie] = useState(null);
+  const [randomMovieTrailer, setRandomMovieTrailer] = useState(null);
+  const [showTrailer, setShowTrailer] = useState(false);
   const { isDark } = useThemeStore();
   const { data, isError, isLoading } = useQuery({
     queryKey: ["movies"],
@@ -40,9 +60,25 @@ export default function MovieList() {
   useEffect(() => {
     if (data && data.length > 0) {
       const random = Math.floor(Math.random() * data.length);
-      setRandomMovie(random);
+      setRandomMovie(data[random]);
+
+      const fetchTrailer = async () => {
+        const trailer = await getMovieTrailer(data[random].id);
+        setRandomMovieTrailer(trailer);
+      };
+      fetchTrailer();
     }
   }, [data]);
+
+  useEffect(() => {
+    let timer;
+    if (randomMovie) {
+      timer = setTimeout(() => {
+        setShowTrailer(true);
+      }, 5000);
+    }
+    return () => clearTimeout(timer);
+  }, [randomMovie]);
 
   if (isLoading) {
     return <Loader />;
@@ -54,28 +90,38 @@ export default function MovieList() {
 
   return (
     <div>
-      {data && randomMovie !== null && ( // Ensure randomMovie is set
+      {randomMovie && (
         <div className="w-full">
           {/* Hero Section */}
           <div className="relative h-screen">
-            <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
-            <img
-              src={
-                data[randomMovie]?.backdrop_path
-                  ? `${import.meta.env.VITE_MOVIEDB_BACKDROP}${data[randomMovie].backdrop_path}`
-                  : noPhoto
-              }
-              alt={data[randomMovie]?.title || "No Title Available"}
-              className="w-full h-full object-cover"
-            />
+            {showTrailer && randomMovieTrailer ? (
+              <iframe
+                src={`https://www.youtube.com/embed/${randomMovieTrailer.key}`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                aria-controls="hidden"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <img
+                src={
+                  randomMovie.backdrop_path
+                    ? `${import.meta.env.VITE_MOVIEDB_BACKDROP}${randomMovie.backdrop_path}`
+                    : noPhoto
+                }
+                alt={randomMovie.title || "No Title Available"}
+                className="w-full h-full object-cover"
+              />
+            )}
             <div className="absolute md:bottom-14 bottom-28 left-0 p-8 w-full md:w-2/3">
-              <h1 className="text-5xl font-bold mb-4 text-white">{data[randomMovie]?.title}</h1>
-              <p className="text-xl mb-6 text-white text-ellipse">{data[randomMovie]?.overview}</p>
+              <h1 className="text-5xl font-bold mb-4 text-white">{randomMovie.title}</h1>
+              <p className="text-xl mb-6 text-white text-ellipse">{randomMovie.overview}</p>
               <div className="flex space-x-4 mb-6">
                 <button className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
                   <Bookmark className="mr-2" /> Save
                 </button>
-                <Link to={`/${data[randomMovie]?.id}`}>
+                <Link to={`/${randomMovie.id}`}>
                   <button className="bg-gray-500 bg-opacity-50 text-white py-2 px-6 rounded flex items-center hover:bg-opacity-70 transition">
                     <Info className="mr-2" /> More Info
                   </button>

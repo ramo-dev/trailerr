@@ -7,7 +7,7 @@ export default function BackToTop() {
 
   useEffect(() => {
     function showOnScroll() {
-      if (window.scrollY > 10) {
+      if (window.scrollY > 50) {
         setShow(true);
       } else {
         setShow(false);
