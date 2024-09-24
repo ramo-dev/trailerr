@@ -68,12 +68,12 @@ export default function MovieList() {
               alt={data[randomMovie]?.title || "No Title Available"}
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-14 left-0 p-8 w-full md:w-2/3">
+            <div className="absolute md:bottom-14 bottom-28 left-0 p-8 w-full md:w-2/3">
               <h1 className="text-5xl font-bold mb-4 text-white">{data[randomMovie]?.title}</h1>
-              <p className="text-xl mb-6 text-white">{data[randomMovie]?.overview}</p>
+              <p className="text-xl mb-6 text-white text-ellipse">{data[randomMovie]?.overview}</p>
               <div className="flex space-x-4 mb-6">
                 <button className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
-                  <Bookmark className="mr-2" /> Play
+                  <Bookmark className="mr-2" /> Save
                 </button>
                 <Link to={`/${data[randomMovie]?.id}`}>
                   <button className="bg-gray-500 bg-opacity-50 text-white py-2 px-6 rounded flex items-center hover:bg-opacity-70 transition">
@@ -85,7 +85,7 @@ export default function MovieList() {
           </div>
         </div>
       )}
-      <div className={`${isDark ? "bg-black py-10" : "bg-white py-10"} px-10 mx-auto flex flex-wrap gap-6 w-full`}>
+      <div className={`${isDark ? "bg-black py-10" : "bg-white py-10"} md:px-10 px-2 mx-auto flex flex-wrap gap-6 w-full`}>
         {data ? data.map((item) => (
           <Link to={`/${item.id}`} key={item.id}>
             <div className={`${isDark ? "bg-black border-gray-500" : "bg-white border-gray-300"} border p-4 rounded-lg hover:shadow-md md:max-w-[400px] h-full`}>

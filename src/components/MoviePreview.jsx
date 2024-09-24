@@ -64,7 +64,7 @@ export default function MoviePreview() {
               alt={data.title || "No Title Available"}
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-14 left-0 p-8 w-full md:w-2/3">
+            <div className="absolute md:bottom-14 bottom-32  left-0 md:p-8 p-3 w-full md:w-2/3">
               <h1 className={`text-5xl font-bold mb-4 text-white`}>{data.title}</h1>
               <p className={`text-xl mb-6 text-white`}>{data.tagline}</p>
               <div className="flex space-x-4 mb-6">

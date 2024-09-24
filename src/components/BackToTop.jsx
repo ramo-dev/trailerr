@@ -20,7 +20,7 @@ export default function BackToTop() {
   }, []);
 
   return (
-    <a href="#" className={`fixed bottom-10 right-10 ${show ? "" : "hidden"}`}>
+    <a href="#" className={`fixed md:bottom-10 bottom-8 md:right-10 right-5 ${show ? "" : "hidden"}`}>
       <button className="p-3 rounded-full bg-blue-500 border-2 border-gray-300 w-max cursor-pointer">
         <ArrowUp className="cursor-pointer text-white" />
       </button>
