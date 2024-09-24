@@ -49,6 +49,7 @@ export default function MovieList() {
   const [randomMovie, setRandomMovie] = useState(null);
   const [randomMovieTrailer, setRandomMovieTrailer] = useState(null);
   const [showTrailer, setShowTrailer] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { isDark } = useThemeStore();
   const { data, isError, isLoading } = useQuery({
     queryKey: ["movies"],
@@ -69,6 +70,25 @@ export default function MovieList() {
       fetchTrailer();
     }
   }, [data]);
+
+
+
+  useEffect(() => {
+    function detectScreenScroll() {
+      if (window.scrollY > 15) {
+        setScrolled(true);
+      }
+      else {
+        setScrolled(false);
+      }
+    }
+    window.addEventListener("scroll", detectScreenScroll);
+
+    return () => window.removeEventListener("scroll", detectScreenScroll)
+  }, [])
+
+
+
 
   useEffect(() => {
     let timer;
@@ -114,7 +134,7 @@ export default function MovieList() {
                 className="w-full h-full object-cover"
               />
             )}
-            <div className="absolute md:bottom-14 bottom-28 left-0 p-8 w-full md:w-2/3">
+            <div className={`absolute md:bottom-14 bottom-28 left-0 p-8 w-full w-full rounded-lg bg-gradient-to-t from-black to-transparent transition-all duration-500 ease-in-out  ${scrolled ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}`}>
               <h1 className="text-5xl font-bold mb-4 text-white">{randomMovie.title}</h1>
               <p className="text-xl mb-6 text-white text-ellipse">{randomMovie.overview}</p>
               <div className="flex space-x-4 mb-6">
@@ -131,28 +151,32 @@ export default function MovieList() {
           </div>
         </div>
       )}
-      <div className={`${isDark ? "bg-black py-10" : "bg-white py-10"} md:px-10 px-2 mx-auto flex flex-wrap gap-6 w-full`}>
-        {data ? data.map((item) => (
-          <Link to={`/${item.id}`} key={item.id}>
-            <div className={`${isDark ? "bg-black border-gray-500" : "bg-white border-gray-300"} border p-4 rounded-lg hover:shadow-md md:max-w-[400px] h-full`}>
-              <img
-                loading="lazy"
-                src={`${import.meta.env.VITE_MOVIEDB_IMAGES}${item.poster_path}`}
-                alt={item.title}
-                className="rounded-lg object-cover h-60 w-full mb-4"
-              />
-              <h2 className={`text-lg font-semibold mb-1 ${isDark ? "text-gray-200" : "text-gray-800"}`}>{item.title}</h2>
-              <p className={`${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}>{item.overview}</p>
-              <div className={`flex items-center text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}>
-                <User className="mr-1" />
-                <span>{item.original_language}</span>
-                <span className="mx-2">|</span>
-                <Calendar className="mr-1" />
-                <span>{item.release_date}</span>
+      <div className={`${isDark ? "bg-black py-10 text-white" : "bg-white py-10"}`} >
+        <h1 className="text-4xl my-8 md:ms-10 ms-2 font-bold">People are also watching</h1>
+        <div className="md:px-10 px-2 mx-auto flex flex-wrap gap-6 w-full">
+
+          {data ? data.map((item) => (
+            <Link to={`/${item.id}`} key={item.id}>
+              <div className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full`}>
+                <img
+                  loading="lazy"
+                  src={`${import.meta.env.VITE_MOVIEDB_IMAGES}${item.poster_path}`}
+                  alt={item.title}
+                  className="rounded-lg object-cover h-60 w-full mb-4"
+                />
+                <h2 className={`text-lg font-semibold mb-1 ${isDark ? "text-gray-200" : "text-gray-800"}`}>{item.title}</h2>
+                <p className={`${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}>{item.overview}</p>
+                <div className={`flex items-center text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}>
+                  <User className="mr-1" />
+                  <span>{item.original_language}</span>
+                  <span className="mx-2">|</span>
+                  <Calendar className="mr-1" />
+                  <span>{item.release_date}</span>
+                </div>
               </div>
-            </div>
-          </Link>
-        )) : "No movies available"}
+            </Link>
+          )) : "No movies available"}
+        </div>
       </div>
     </div>
   );

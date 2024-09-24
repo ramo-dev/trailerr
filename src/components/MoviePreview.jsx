@@ -89,7 +89,7 @@ export default function MoviePreview() {
     window.addEventListener("scroll", detectScreenScroll);
 
     return () => window.removeEventListener("scroll", detectScreenScroll)
-  }, [scrolled])
+  }, [])
 
   return (
     <div className={`${isDark ? "bg-black" : "bg-white"} min-h-screen`}>
