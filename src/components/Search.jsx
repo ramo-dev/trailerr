@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 
 const fetchArticles = async (query) => {
-  const api = `${import.meta.env.VITE_MOVIEDB_ENDPOINT}/everything?q=${query}`;
+  const api = `${import.meta.env.VITE_MOVIEDB_QUERY}multi?query=${query}`;
   const key = import.meta.env.VITE_MOVIEDB_API_KEY;
   const resp = await fetch(api, {
     headers: {
