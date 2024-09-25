@@ -64,9 +64,9 @@ export default function Search() {
   return (
     <Dialog.Root>
       <Dialog.Trigger>
-        <Button radius="full" variant="ghost" size="4" className="!h-8 !w-5 cursor-pointer">
-          <SearchIcon className="h-12 w-12 cursor-pointer" />
-        </Button>
+        <button variant="outline" size="3" className="rounded-full border-2 p-2 text-blue-500 border-blue-500">
+          <SearchIcon />
+        </button>
       </Dialog.Trigger>
       <Dialog.Content
         maxWidth="750px"

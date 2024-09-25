@@ -12,22 +12,26 @@ export default function Navbar() {
 
 
   return (
-    <nav className={`${isDark ? "bg-black" : "bg-white border-b"} p-4 sticky top-0 z-10 md:px-10`}>
+    <nav className={`${isDark ? "bg-black border-black" : "bg-white "}border-b p-4 sticky top-0 z-10 px-4`}>
       <div className=" mx-auto flex justify-between items-center">
         <Link to="/" className={`${isDark ? "text-white" : "text-black"} text-2xl font-semibold`}>
           <FilmIcon className="h-8 w-8" />
           <p className="sr-only">WatchWise</p>
         </Link>
-        <div className="ms-auto me-8">
+        <div className="ms-auto me-5">
           <Search />
         </div>
         <div className="flex space-x-4">
           <button onClick={toggleTheme} variant="outline" size="3" className="rounded-full border-2 p-2 text-blue-500 border-blue-500">
             {isDark ? <Sun /> : <Moon />}
           </button>
-          <Button variant="solid" size="3" className="w-32 bg-blue-500 text-white">
-            Login
-          </Button>
+          <Link to="login" className="cursor-pointer">
+            <Button variant="solid" size="3" className="!w-32 bg-blue-500 text-white ">
+              Login
+            </Button>
+
+          </Link>
+
         </div>
       </div>
     </nav>

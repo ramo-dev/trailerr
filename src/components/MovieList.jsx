@@ -134,7 +134,7 @@ export default function MovieList() {
                 className="w-full h-full object-cover"
               />
             )}
-            <div className={`absolute md:bottom-14 bottom-28 left-0 p-8 w-full w-full rounded-lg bg-gradient-to-t from-black to-transparent transition-all duration-500 ease-in-out  ${scrolled ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}`}>
+            <div className={`absolute md:bottom-14 bottom-32 left-0 md:p-8 px-3 w-full w-full rounded-lg bg-gradient-to-t from-black to-transparent transition-all duration-500 ease-in-out  ${scrolled ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"}`}>
               <h1 className="text-5xl font-bold mb-4 text-white">{randomMovie.title}</h1>
               <p className="text-xl mb-6 text-white text-ellipse">{randomMovie.overview}</p>
               <div className="flex space-x-4 mb-6">

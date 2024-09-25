@@ -7,7 +7,7 @@ export default function Footer() {
 
 
   return (
-    <footer className={`text-gray-400 p-4 mt-auto ${isDark ? "bg-black" : "bg-white border-t "}`}>
+    <footer className={`text-gray-400 p-4 mt-auto ${isDark ? "bg-black" : "bg-white border-t "} `}>
       <div className="container mx-auto text-center">
         <p>&copy; {new Date().getFullYear()} watchWise. All rights reserved.</p>
         <div className="flex justify-center space-x-4 mt-2">

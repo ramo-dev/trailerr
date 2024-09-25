@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import { Calendar, Globe, Star, Film, Heart, Bookmark, Info } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { Calendar, Globe, Star, Film, Heart, Bookmark, Info, User } from "lucide-react";
 import noPhoto from "../assets/nophoto.webp";
 import GoBackBtn from "./GoBackBtn";
 import Loader from "./Loading";
@@ -41,7 +41,29 @@ async function getMovieTrailer(id) {
     console.log(err);
     return null;
   }
-}
+};
+
+
+const fetchRelated = async (id) => {
+  const api = `${import.meta.env.VITE_MOVIEDB_ENDPOINT}${id}/similar?language=en-US&page=1`;
+  const key = import.meta.env.VITE_MOVIEDB_API_KEY;
+
+  const resp = await fetch(api, {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${key}`
+    },
+  });
+
+  if (!resp.ok) {
+    throw new Error("Network response was not okay!");
+  }
+
+  const data = await resp.json();
+  return data.results;
+};
+
 
 export default function MoviePreview() {
   const { id } = useParams();
@@ -54,6 +76,11 @@ export default function MoviePreview() {
     queryKey: ['MovieTitle', id],
     queryFn: () => fetchMovies(id),
   });
+
+  const { data: related, isLoading: relatedLoading, isError: relatedError } = useQuery({
+    queryKey: ['Related', id],
+    queryFn: () => fetchRelated(id),
+  })
 
   useEffect(() => {
     const fetchTrailer = async () => {
@@ -84,7 +111,13 @@ export default function MoviePreview() {
     window.addEventListener("scroll", detectScreenScroll);
 
     return () => window.removeEventListener("scroll", detectScreenScroll)
-  }, [])
+  }, []);
+
+
+  useEffect(() => {
+    // Scroll to the top when a new movie is loaded
+    window.scrollTo(0, 0);
+  }, [id]);
 
   if (isLoading) {
     return <Loader />;
@@ -215,6 +248,35 @@ export default function MoviePreview() {
           </div>
         </div>
       )}
+
+      <h1 className={`${isDark ? "text-white" : ""} md:px-10 px-2 font-bold text-3xl my-4`}>People also watched</h1>
+      <div className="md:px-10 px-2 mx-auto flex flex-wrap gap-6 w-full">
+
+        {relatedLoading ? <Loader /> :
+          related ? related.map((item) => (
+
+            <Link to={`/${item.id}`} key={item.id}>
+              <div className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out`}>
+                <img
+                  loading="lazy"
+                  src={`${import.meta.env.VITE_MOVIEDB_IMAGES}${item.poster_path}`}
+                  alt={item.title}
+                  className="rounded-lg object-cover h-60 w-full mb-4"
+                />
+                <h2 className={`text-lg font-semibold mb-1 ${isDark ? "text-gray-200" : "text-gray-800"}`}>{item.title}</h2>
+                <p className={`${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}>{item.overview}</p>
+                <div className={`flex items-center text-sm ${isDark ? "text-gray-400" : "text-gray-600"} mb-2`}>
+                  <User className="mr-1" />
+                  <span>{item.original_language}</span>
+                  <span className="mx-2">|</span>
+                  <Calendar className="mr-1" />
+                  <span>{item.release_date}</span>
+                </div>
+              </div>
+            </Link>
+          )) : "No movies available"}
+
+      </div>
     </div>
   );
 }
