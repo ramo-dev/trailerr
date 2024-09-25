@@ -1,9 +1,9 @@
-import { Button, Dialog, Skeleton } from "@radix-ui/themes";
+import { Button, Dialog, IconButton, Skeleton } from "@radix-ui/themes";
 import { FilmIcon, SearchIcon, XIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import useThemeStore from "../store/ThemeStore";
+import { useThemeStore } from "../store/store";
 
 const fetchArticles = async (query) => {
   const api = `${import.meta.env.VITE_MOVIEDB_QUERY}multi?query=${query}`;
@@ -64,9 +64,10 @@ export default function Search() {
   return (
     <Dialog.Root>
       <Dialog.Trigger>
-        <button variant="outline" size="3" className="rounded-full border-2 p-2 text-blue-500 border-blue-500">
+        <IconButton variant="solid" size="3" radius="full"
+          className="cursor-pointer">
           <SearchIcon />
-        </button>
+        </IconButton>
       </Dialog.Trigger>
       <Dialog.Content
         maxWidth="750px"

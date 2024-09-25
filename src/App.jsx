@@ -6,8 +6,15 @@ import BackToTop from "./components/BackToTop";
 import MoviePreview from "./components/MoviePreview";
 import LoginSignup from "./pages/Login";
 import Register from "./pages/Register";
+import { useState } from "react";
+import { useAuth } from "./store/store";
+import { account } from "./utils/firebase";
+import MyList from "./pages/MyList";
 
 const App = () => {
+  useState(() => {
+    console.log(account)
+  }, [])
   return (
     <>
       <BrowserRouter>
@@ -16,7 +23,7 @@ const App = () => {
           <Route path="/" Component={Home} />
           <Route path="/login" Component={LoginSignup} />
           <Route path="/register" Component={Register} />
-          <Route path="/mylist" Component={Home} />
+          <Route path="/mylist" Component={MyList} />
           <Route path="/:id" Component={MoviePreview} />
 
         </Routes>

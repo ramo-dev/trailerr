@@ -1,5 +1,5 @@
 import React from "react";
-import useThemeStore from "../store/ThemeStore";
+import { useThemeStore } from "../store/store";
 
 
 export default function Loader() {

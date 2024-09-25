@@ -5,10 +5,11 @@ import { Link } from "react-router-dom";
 import noPhoto from "../assets/nophoto.webp";
 import ErrorBoundary from "./Error";
 import Loader from "./Loading";
-import useThemeStore from "../store/ThemeStore";
+import { useThemeStore } from "../store/store";
 
 const fetchMovies = async () => {
-  const api = `${import.meta.env.VITE_MOVIEDB_ENDPOINT}`;
+  const api = `${import.meta.env.VITE_MOVIEDB_ENDPOINT}trending/all/week?language=en-US
+`;
   const key = import.meta.env.VITE_MOVIEDB_API_KEY;
 
   const resp = await fetch(api, {
