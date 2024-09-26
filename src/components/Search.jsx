@@ -98,7 +98,7 @@ export default function Search() {
               data && data.length > 0 ? (
                 data.map((item, index) => (
                   <Dialog.Close>
-                    <Link to={`${item.id}`} key={index} className="block">
+                    <Link to={`/movie/${item.id}`} key={index} className="block">
                       <div className="flex items-center gap-4 p-4 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg my-4 transition">
                         {item.poster_path ? (
                           <img

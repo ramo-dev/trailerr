@@ -22,6 +22,7 @@ const useAuth = create((set) => ({
   user: null,
   loading: true,
   error: null,
+  setError: (err) => set({ err }),
   setUser: (user) => set({ user, loading: false }),
   register: async (username, email, password) => {
     try {

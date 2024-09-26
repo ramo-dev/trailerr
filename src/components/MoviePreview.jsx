@@ -249,7 +249,7 @@ export default function MoviePreview() {
         {relatedLoading ? <Loader /> :
           related ? related.map((item) => (
 
-            <Link to={`/${item.id}`} key={item.id}>
+            <Link to={`/movie/${item.id}`} key={item.id}>
               <div className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out`}>
                 <img
                   loading="lazy"

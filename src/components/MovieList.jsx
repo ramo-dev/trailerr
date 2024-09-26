@@ -142,7 +142,7 @@ export default function MovieList() {
                 <button className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
                   <Bookmark className="mr-2" /> Save
                 </button>
-                <Link to={`/${randomMovie.id}`}>
+                <Link to={`/movie/${randomMovie.id}`}>
                   <button className="bg-gray-500 bg-opacity-50 text-white py-2 px-6 rounded flex items-center hover:bg-opacity-70 transition">
                     <Info className="mr-2" /> More Info
                   </button>
@@ -157,7 +157,7 @@ export default function MovieList() {
         <div className="md:px-10 px-2 mx-auto flex flex-wrap gap-6 w-full">
 
           {data ? data.map((item) => (
-            <Link to={`/${item.id}`} key={item.id}>
+            <Link to={`/movie/${item.id}`} key={item.id}>
               <div className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out`}>
                 <img
                   loading="lazy"

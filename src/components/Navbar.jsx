@@ -2,7 +2,7 @@ import { Button, Avatar, IconButton, Popover, Flex, TextArea, Checkbox } from "@
 
 import Search from "./Search";
 import { Link } from "react-router-dom";
-import { Box, FilmIcon, Loader, Moon, Popcorn, Sun } from "lucide-react";
+import { Box, FilmIcon, List, Loader, LogOut, Moon, Popcorn, Sun, User } from "lucide-react";
 import { useThemeStore } from "../store/store";
 import useAuthState from "../hooks/useAuth";
 import { useEffect } from "react";
@@ -54,27 +54,38 @@ export default function Navbar() {
                 </Popover.Trigger>
                 <Popover.Content width="200px"
                   className={`flex flex-col gap-2 ${isDark ? "!bg-black" : ""}`}>
-                  <Button variant="solid">
-                    My List
-                  </Button>
-                  <Button variant="solid">
-                    Profile
-                  </Button>
+                  <Link to="/u/mylist" className="w-full">
+                    <Button variant="solid" className="!w-full flex-1 !flex !justify-start">
+                      <List />
+                      My List
+                    </Button>
+                  </Link>
+                  <Link to="/u/profile" className="w-full">
+
+                    <Button variant="solid" className="!w-full !flex !justify-start">
+                      <User />
+                      Profile
+                    </Button></Link>
+
                   <Button
                     onClick={logout}
                     variant="solid"
-                    color="red">
+                    color="red"
+                    className="!flex !justify-start"
+                  >
+                    <LogOut />
                     Logout
                   </Button>
 
                 </Popover.Content>
               </Popover.Root>
           ) : (
-            <Link to="login">
+            !user ? <Link to="login">
               <Button variant="solid" size="3" className="!w-32 bg-blue-500 text-white">
                 Login
               </Button>
             </Link>
+              : <Loader className="animate-spin" />
           )}
         </div>
       </div>

@@ -52,7 +52,7 @@ const Login = () => {
         <h2 className="my-6 text-center text-3xl font-extrabold">
           Create your account
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4 my-6">
+        <form onSubmit={handleSubmit} className="space-y-4 my-5">
 
           <div className="relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -109,6 +109,12 @@ const Login = () => {
           </button>
 
         </form>
+        <small className='flex justify-center mb-2'>or</small>
+        <button
+          className={`my-2 w-full ${loading ? "bg-gray-600" : "bg-neutral-600 hover:bg-neutral-800"} text-white py-2 text-center rounded-md  transition duration-300`}
+        >
+          Google
+        </button>
         <p className="mt-4 text-center text-sm text-gray-600">
 
           Already have an account?
