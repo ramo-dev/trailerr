@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Loader } from 'lucide-react';
 import Background from "../assets/movie.jpg"
 import GoBackBtn from '../components/GoBackBtn';
@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { useThemeStore } from "../store/store";
 import useAuthState from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { Button, Separator } from '@radix-ui/themes';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,14 +30,16 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const user = await login(formData.email, formData.password);
-    if (user) {
-      setTimeout(() => {
-        navigate('/')
-      }, 2000)
-    }
-    console.log(user);
+    await login(formData.email, formData.password);
   };
+
+  useEffect(() => {
+    if (user?.email) {
+      navigate('/')
+    }
+
+  }, [user]);
+
 
   return (
     <div

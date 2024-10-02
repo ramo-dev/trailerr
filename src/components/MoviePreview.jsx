@@ -5,7 +5,8 @@ import { Calendar, Globe, Star, Film, Heart, Bookmark, Info, User } from "lucide
 import noPhoto from "../assets/nophoto.webp";
 import GoBackBtn from "./GoBackBtn";
 import Loader from "./Loading";
-import { useThemeStore } from "../store/store";
+import { useMovieStore, useThemeStore } from "../store/store";
+import useAuthState from "../hooks/useAuth";
 
 const fetchMovies = async (id) => {
   const api = `${import.meta.env.VITE_MOVIEDB_PREVIEW}${id}`;
@@ -71,6 +72,8 @@ export default function MoviePreview() {
   const [movieTrailer, setMovieTrailer] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const [timeoutId, setTimeoutId] = useState(null);
+  const { addMovie, removeMovie } = useMovieStore();
+  const { user } = useAuthState();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['MovieTitle', id],
@@ -167,9 +170,18 @@ export default function MoviePreview() {
                 <h1 className={`text-5xl font-bold mb-4 text-white`}>{data.title}</h1>
                 <p className={`text-xl mb-6 text-white`}>{data.tagline}</p>
                 <div className="flex space-x-4 mb-6">
-                  <button className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
+                  {user ? <button
+                    onClick={() => addMovie(user.uid, data)}
+                    className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
                     <Bookmark className="mr-2" /> Save
                   </button>
+                    : <Link to="/login">
+                      <button
+                        className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
+                        Login to save
+                      </button>
+
+                    </Link>}
                   <a href="#info">
                     <button className="bg-gray-500 bg-opacity-50 text-white py-2 px-6 rounded flex items-center hover:bg-opacity-70 transition">
                       <Info className="mr-2" /> More Info
@@ -245,10 +257,8 @@ export default function MoviePreview() {
 
       <h1 className={`${isDark ? "text-white" : ""} md:px-10 px-2 font-bold text-3xl my-4`}>People also watched</h1>
       <div className="md:px-10 px-2 mx-auto flex flex-wrap gap-6 w-full">
-
-        {relatedLoading ? <Loader /> :
+        {relatedLoading ? <div className="mx-auto"><Loader /></div> :
           related ? related.map((item) => (
-
             <Link to={`/movie/${item.id}`} key={item.id}>
               <div className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out`}>
                 <img
@@ -268,7 +278,7 @@ export default function MoviePreview() {
                 </div>
               </div>
             </Link>
-          )) : "No movies available"}
+          )) : <p className={`${isDark ? "text-white" : ""} h-[10vh]`}>No movies available</p>}
 
       </div>
     </div>
