@@ -31,7 +31,7 @@ const useAuth = create((set) => ({
       set({ loading: true, error: null })
       const userCredentials = await createUserWithEmailAndPassword(account, email, password);
       await updateProfile(userCredentials.user, { displayName: username })
-      set({ loading: true, error: null })
+      set({ loading: false, error: null });
     } catch (err) {
       set({ error: err.message, loading: false })
     }

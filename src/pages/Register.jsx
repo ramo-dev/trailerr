@@ -16,7 +16,7 @@ const Login = () => {
 
   });
   const { isDark } = useThemeStore();
-  const { user, register, loading, signInWithGoogle } = useAuthState();
+  const { error, user, register, loading, signInWithGoogle } = useAuthState();
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -29,14 +29,20 @@ const Login = () => {
     }));
   };
 
-  async function newUser() {
-    await register(formData.username, formData.email, formData.password)
-  }
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    newUser();
+    //console.log("Form submit triggered", formData);  // Debug here
+
+    const result = await register(formData.username, formData.email, formData.password);
+    if (result === undefined || null && !loading && !user.length > 0) {
+      toast.error("User already exists");
+    } else {
+      toast.success("Account created Successfully")
+    }
   };
+
 
 
   async function handleSignInWithGoogle() {
