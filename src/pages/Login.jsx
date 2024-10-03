@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useThemeStore } from "../store/store";
 import useAuthState from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,7 +15,7 @@ const Login = () => {
     password: '',
   });
   const { isDark } = useThemeStore();
-  const { user, login, loading, error } = useAuthState();
+  const { user, login, loading, error, signInWithGoogle } = useAuthState();
   const navigate = useNavigate();
 
 
@@ -31,14 +32,27 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await login(formData.email, formData.password);
+    if (error) {
+      toast.error("Invalid email or Password");
+    }
   };
 
   useEffect(() => {
     if (user?.email) {
-      navigate('/')
+      navigate(-1)
     }
 
   }, [user]);
+
+
+  async function handleSignInWithGoogle() {
+    try {
+      await signInWithGoogle();
+      toast.success("Sign in Successful");
+    } catch (err) {
+      toast.error("Error signing in with Google")
+    }
+  }
 
 
   return (
@@ -50,7 +64,6 @@ const Login = () => {
       <div className={`${isDark ? "bg-black/80  text-white" : "bg-white  text-black"} relative md:p-8 px-4 py-20 md:rounded-lg md:shadow-md w-full max-w-md md:h-fit h-screen`}>
         <h2 className="text-3xl font-bold mb-6">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4 my-3 ">
-          {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
@@ -96,6 +109,7 @@ const Login = () => {
         </form>
         <small className='flex justify-center my-2'>or</small>
         <button
+          onClick={handleSignInWithGoogle}
           className={`my-2 w-full ${loading ? "bg-gray-600" : "bg-neutral-600 hover:bg-neutral-800"} text-white py-2 text-center rounded-md  transition duration-300`}
         >
           Google

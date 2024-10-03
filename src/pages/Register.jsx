@@ -3,9 +3,9 @@ import { Mail, Lock, Eye, EyeOff, User, Loader } from 'lucide-react';
 import Background from "../assets/movie.jpg"
 import { useThemeStore } from '../store/store';
 import GoBackBtn from '../components/GoBackBtn';
-import { Link } from 'react-router-dom';
-import { Button } from '@radix-ui/themes';
+import { Link, useNavigate } from 'react-router-dom';
 import useAuthState from '../hooks/useAuth';
+import { toast } from 'sonner';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +16,8 @@ const Login = () => {
 
   });
   const { isDark } = useThemeStore();
-  const { register, loading, error } = useAuthState();
+  const { user, register, loading, signInWithGoogle } = useAuthState();
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
@@ -29,8 +30,7 @@ const Login = () => {
   };
 
   async function newUser() {
-    const user = await register(formData.username, formData.email, formData.password)
-    console.log(user);
+    await register(formData.username, formData.email, formData.password)
   }
 
   const handleSubmit = (e) => {
@@ -38,9 +38,23 @@ const Login = () => {
     newUser();
   };
 
+
+  async function handleSignInWithGoogle() {
+    try {
+      await signInWithGoogle();
+      toast.success("Sign in Successful");
+    } catch (err) {
+      toast.error("Error signing in with Google")
+    }
+  }
+
   useEffect(() => {
-    console.log(error);
-  }, [error])
+    if (user?.email) {
+      navigate(-1)
+    }
+
+  }, [user]);
+
 
   return (
     <div
@@ -111,6 +125,7 @@ const Login = () => {
         </form>
         <small className='flex justify-center mb-2'>or</small>
         <button
+          onClick={handleSignInWithGoogle}
           className={`my-2 w-full ${loading ? "bg-gray-600" : "bg-neutral-600 hover:bg-neutral-800"} text-white py-2 text-center rounded-md  transition duration-300`}
         >
           Google

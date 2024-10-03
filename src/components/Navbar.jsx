@@ -5,16 +5,13 @@ import { Link } from "react-router-dom";
 import { Box, FilmIcon, List, Loader, LogOut, Moon, Popcorn, Sun, User } from "lucide-react";
 import { useThemeStore } from "../store/store";
 import useAuthState from "../hooks/useAuth";
-import { useEffect } from "react";
 
 export default function Navbar() {
 
   const { isDark, toggleTheme } = useThemeStore();
   const { user, loading, logout } = useAuthState();
 
-  useEffect(() => {
-    console.log(user);
-  }, [])
+
 
   return (
     <nav className={`${isDark ? "bg-black" : "bg-white"} duration-200 ease-in-out delay-1 p-4 sticky top-0 z-10 px-4`}>
@@ -45,8 +42,8 @@ export default function Navbar() {
                     variant="surface"
                   >
                     <Avatar
-                      src={user.photoURL}
-                      fallback={user.displayName[0]}
+                      src={user?.photoURL}
+                      fallback={user?.displayName ? user.displayName[0] : "?"}
 
                     />
 

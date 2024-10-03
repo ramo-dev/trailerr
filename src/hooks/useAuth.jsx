@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { useAuth } from "../store/store";
-import { account } from "../utils/firebase";
+import { account, googleProvider } from "../utils/firebase";
+import { signInWithPopup } from "firebase/auth";
 
 
 const useAuthState = () => {
-  const { user, loading, error, setUser, login, logout, register } = useAuth();
+  const { user, loading, error, setUser, login, logout, register, setError } = useAuth();
 
   useEffect(() => {
     const unsub = account?.onAuthStateChanged((user) => {
@@ -12,16 +13,26 @@ const useAuthState = () => {
         setUser(user);
       } else {
         setUser(null)
+        setError("Unable to verify");
       }
     })
 
     return () => unsub();
   }, [setUser]);
 
-  return { user, loading, error, setUser, login, logout, register }
+  async function signInWithGoogle() {
+    const result = await signInWithPopup(account, googleProvider);
+    if (result) {
+      setUser(result.user);
+    } else {
+      setUser(null);
+      setError("Error Signing in with Google")
+    }
+  }
+
+  return { user, loading, error, setUser, login, logout, register, signInWithGoogle }
 };
 
 
 
-//have to export it as hook function not result
 export default useAuthState;

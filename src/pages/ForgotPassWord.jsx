@@ -1,26 +1,22 @@
 
 import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, Loader } from 'lucide-react';
+import { Mail, Loader } from 'lucide-react';
 import Background from "../assets/movie.jpg"
 import GoBackBtn from '../components/GoBackBtn';
-import { Link } from 'react-router-dom';
 import { useThemeStore } from "../store/store";
 import useAuthState from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { Button, Separator } from '@radix-ui/themes';
 
 const ForgotPass = () => {
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const { isDark } = useThemeStore();
-  const { user, login, loading, error } = useAuthState();
+  const { loading, error } = useAuthState();
   const navigate = useNavigate();
 
 
-  const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -32,11 +28,9 @@ const ForgotPass = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(formData.email, formData.password);
     setTimeout(() => {
       navigate('/')
     }, 2000)
-    console.log(user);
   };
 
   return (

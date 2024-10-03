@@ -3,6 +3,7 @@ import useUpdateProfile from "../hooks/useUpdateProfile";
 import { useThemeStore } from "../store/store";
 import { useState } from "react";
 import useAuthState from "../hooks/useAuth";
+import { toast } from "sonner";
 
 const DeleteDialog = () => {
   const { deleteAccount, error } = useUpdateProfile();  // Added error state for better feedback
@@ -11,11 +12,20 @@ const DeleteDialog = () => {
   const [confirmed, setConfirmed] = useState(false);
   const [password, setPassword] = useState("");  // Added password state
 
-  const handleDelete = () => {
+
+  const handleDelete = async () => {
     if (confirmed && password) {
-      deleteAccount(password);  // Pass the password to deleteAccount function
+      const { success, message } = await deleteAccount(password);
+
+      if (!success) {
+        // Display the error toast and log the error message
+        toast.error(message || "Invalid credentials, please try again");
+      } else {
+        toast.success("Account deleted successfully");
+      }
     }
   };
+
 
   return (
     <Dialog.Root>

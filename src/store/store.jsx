@@ -2,7 +2,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { create } from "zustand";
 import { account, db } from "../utils/firebase";
-import { doc, setDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
+import { doc, setDoc, deleteDoc, collection, onSnapshot } from "firebase/firestore";
 
 
 const getInitalTheme = () => {
@@ -63,35 +63,31 @@ const useMovieStore = create((set, get) => ({
   isAdded: false,
   setError: (error) => set({ error }),
 
+
   addMovie: async (userId, movie) => {
-    set({ loading: true, error: null, isAdded: false });  // Reset isAdded and loading status
+    set({ loading: true, error: null, isAdded: false });
     try {
-      // First, fetch current movies to check if the movie already exists
       const existingMovies = get().movies;
       const movieExists = existingMovies.some((m) => m.id === movie.id);
 
       if (movieExists) {
-        console.log("Movie already exists:", movie);
         set({ error: "Movie already added", loading: false });
         return;
       }
 
-      // If movie doesn't exist, proceed to add it
       const movieRef = doc(db, "users", userId, "movies", movie.id.toString());
-      console.log("Adding movie to Firestore:", movieRef);
+      await setDoc(movieRef, movie);
 
-      await setDoc(movieRef, movie);  // Add movie to Firestore
-
-      // Update state with the new movie
       set((state) => ({
         movies: [...state.movies, movie],
         loading: false,
-        isAdded: true,  // Mark that the movie was successfully added
+        isAdded: true,
       }));
 
-      console.log("Movie added successfully:", movie);
+      // Fetch movies again to sync with Firestore
+      get().fetchMovies(userId);
+
     } catch (error) {
-      console.error("Error adding movie:", error);
       set({ error: error.message, loading: false, isAdded: false });
     }
   },
@@ -100,9 +96,9 @@ const useMovieStore = create((set, get) => ({
     set({ loading: true, error: null });  // Start loading and clear errors
     try {
       // Reference to the document to be deleted
-      console.log(movieId)
+      // console.log(movieId)
       const movieRef = doc(db, "users", userId, "movies", movieId.toString());
-      console.log(movieRef);
+      //console.log(movieRef);
       // Delete the document from Firestore
       await deleteDoc(movieRef);
 
@@ -111,7 +107,7 @@ const useMovieStore = create((set, get) => ({
       const movieExists = existingMovies.some((m) => m.id === movieId);
 
       if (!movieExists) {
-        console.log("Movie not found in the store:", movieId);
+        //  console.log("Movie not found in the store:", movieId);
         return; // Exit if the movie was not found
       }
 
@@ -121,34 +117,35 @@ const useMovieStore = create((set, get) => ({
         loading: false,
       }));
 
-      console.log("Movie removed successfully from Firestore and state:", movieId);
+      //console.log("Movie removed successfully from Firestore and state:", movieId);
 
     } catch (error) {
-      console.error("Error removing movie:", error);
+      //console.error("Error removing movie:", error);
       set({ error: error.message, loading: false });
     }
   },
 
-  fetchMovies: async (userId) => {
+  fetchMovies: (userId) => {
     set({ loading: true, error: null });
+
     try {
-      // Reference to the movies collection for a specific user
       const moviesCollection = collection(db, "users", userId, "movies");
-      console.log(moviesCollection);
-      const querySnapshot = await getDocs(moviesCollection);
-      console.log(querySnapshot);
-      const movies = querySnapshot.docs.map((doc) => doc.data());
-      console.log(movies);
-      set({ movies, loading: false });
-      console.log("Movies fetched successfully:", movies);
+
+      // Listen for real-time updates
+      onSnapshot(moviesCollection, (snapshot) => {
+        const movies = snapshot.docs.map((doc) => doc.data());
+
+        set({ movies, loading: false }); // Update the movies array in state
+        //console.log("Movies updated in real-time:", movies);
+      });
+
     } catch (error) {
-      console.error("Error fetching movies:", error);
+      //console.error("Error fetching movies in real-time:", error);
       set({ error: error.message, loading: false });
     }
   },
-
   clearMovies: () => {
-    console.log("Clearing movies...");
+    //console.log("Clearing movies...");
     set({ movies: [] });
   },
 }));

@@ -8,7 +8,7 @@ import Loader from "./Loading";
 import { useThemeStore } from "../store/store";
 
 const fetchMovies = async () => {
-  const api = `${import.meta.env.VITE_MOVIEDB_ENDPOINT}trending/all/week?language=en-US
+  const api = `https://api.themoviedb.org/3/trending/all/week?language=en-US
 `;
   const key = import.meta.env.VITE_MOVIEDB_API_KEY;
 
@@ -29,7 +29,7 @@ const fetchMovies = async () => {
 };
 
 async function getMovieTrailer(id) {
-  const trailerApi = `${import.meta.env.VITE_MOVIEDB_VIDEOS}${id}/videos`;
+  const trailerApi = `https://api.themoviedb.org/3/movie/${id}/videos`;
   const key = import.meta.env.VITE_MOVIEDB_API_KEY;
 
   try {
@@ -41,7 +41,6 @@ async function getMovieTrailer(id) {
     const data = await resp.json();
     return data.results.find((video) => video.type === 'Trailer');
   } catch (err) {
-    console.log(err);
     return null;
   }
 }

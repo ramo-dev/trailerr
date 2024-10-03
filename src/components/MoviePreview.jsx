@@ -9,7 +9,7 @@ import { useMovieStore, useThemeStore } from "../store/store";
 import useAuthState from "../hooks/useAuth";
 
 const fetchMovies = async (id) => {
-  const api = `${import.meta.env.VITE_MOVIEDB_PREVIEW}${id}`;
+  const api = `https://api.themoviedb.org/3/movie/${id}`;
   const key = import.meta.env.VITE_MOVIEDB_API_KEY;
 
   const resp = await fetch(api, {
@@ -27,7 +27,7 @@ const fetchMovies = async (id) => {
 };
 
 async function getMovieTrailer(id) {
-  const trailerApi = `${import.meta.env.VITE_MOVIEDB_VIDEOS}${id}/videos`;
+  const trailerApi = `https://api.themoviedb.org/3/movie/${id}/videos`;
   const key = import.meta.env.VITE_MOVIEDB_API_KEY;
 
   try {
@@ -39,14 +39,13 @@ async function getMovieTrailer(id) {
     const data = await resp.json();
     return data.results.find((video) => video.type === 'Trailer');
   } catch (err) {
-    console.log(err);
     return null;
   }
 };
 
 
 const fetchRelated = async (id) => {
-  const api = `${import.meta.env.VITE_MOVIEDB_ENDPOINT}${id}/similar?language=en-US&page=1`;
+  const api = `https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=1`;
   const key = import.meta.env.VITE_MOVIEDB_API_KEY;
 
   const resp = await fetch(api, {
@@ -71,8 +70,10 @@ export default function MoviePreview() {
   const { isDark } = useThemeStore();
   const [movieTrailer, setMovieTrailer] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   const [timeoutId, setTimeoutId] = useState(null);
-  const { addMovie, removeMovie } = useMovieStore();
+  const { movies, removeMovie, addMovie } = useMovieStore();
+
   const { user } = useAuthState();
 
   const { data, isLoading, isError } = useQuery({
@@ -80,7 +81,7 @@ export default function MoviePreview() {
     queryFn: () => fetchMovies(id),
   });
 
-  const { data: related, isLoading: relatedLoading, isError: relatedError } = useQuery({
+  const { data: related, isLoading: relatedLoading } = useQuery({
     queryKey: ['Related', id],
     queryFn: () => fetchRelated(id),
   })
@@ -122,13 +123,43 @@ export default function MoviePreview() {
     window.scrollTo(0, 0);
   }, [id]);
 
-  if (isLoading) {
-    return <Loader />;
+
+
+  function checkIsAdded(id) {
+    if (movies) {
+      setIsAdded(!isAdded);
+      const find = movies.find(itm => itm.id === id);
+      setIsAdded(!!find);
+    }
   }
 
 
 
+  useEffect(() => {
+    if (data && data.id) {
+      checkIsAdded(data.id);
+    }
+  }, [data?.id, movies]);
 
+
+  const handleAddMovie = () => {
+    if (user && data) {
+      addMovie(user.uid, data);
+      setIsAdded(true);
+    }
+  };
+
+  const handleRemoveMovie = () => {
+    if (user && data) {
+      removeMovie(user.uid, data.id);
+      setIsAdded(false);
+    }
+  };
+
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <div className={`${isDark ? "bg-black" : "bg-white"} min-h-screen`}>
@@ -170,11 +201,20 @@ export default function MoviePreview() {
                 <h1 className={`text-5xl font-bold mb-4 text-white`}>{data.title}</h1>
                 <p className={`text-xl mb-6 text-white`}>{data.tagline}</p>
                 <div className="flex space-x-4 mb-6">
-                  {user ? <button
-                    onClick={() => addMovie(user.uid, data)}
-                    className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
-                    <Bookmark className="mr-2" /> Save
-                  </button>
+                  {user ?
+                    isAdded ?
+                      <button
+                        onClick={handleRemoveMovie}
+                        className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
+                        <Film className="mr-2" /> Remove from List
+                      </button>
+                      : <button
+                        onClick={handleAddMovie}
+                        className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
+                        <Bookmark className="mr-2" /> Save
+                      </button>
+
+
                     : <Link to="/login">
                       <button
                         className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">

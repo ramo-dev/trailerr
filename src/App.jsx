@@ -11,11 +11,13 @@ import Profile from "./pages/Profile";
 import ForgotPass from "./pages/ForgotPassWord";
 import ErrorBoundary from "./components/Error";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import { Toaster } from "sonner";
 
 const App = () => {
   return (
     <>
       <BrowserRouter>
+        <Toaster position="top-right" expand richColors />
         <Navbar />
         <Routes>
           <Route path="/" Component={Home} />

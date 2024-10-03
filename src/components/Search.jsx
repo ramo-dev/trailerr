@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { useThemeStore } from "../store/store";
 
 const fetchArticles = async (query) => {
-  const api = `${import.meta.env.VITE_MOVIEDB_QUERY}multi?query=${query}`;
+  const api = `https://api.themoviedb.org/3/search/multi?query=${query}`;
   const key = import.meta.env.VITE_MOVIEDB_API_KEY;
   const resp = await fetch(api, {
     headers: {
