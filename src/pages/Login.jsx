@@ -39,7 +39,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user?.email) {
-      navigate(-1)
+      navigate('/')
     }
 
   }, [user]);
