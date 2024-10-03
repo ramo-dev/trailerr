@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Bookmark, Calendar, Info, User } from "lucide-react";
+import { Bookmark, Calendar, Film, Info, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import noPhoto from "../assets/nophoto.webp";
 import ErrorBoundary from "./Error";
 import Loader from "./Loading";
-import { useThemeStore } from "../store/store";
+import { useMovieStore, useThemeStore } from "../store/store";
+import useAuthState from "../hooks/useAuth";
 
 const fetchMovies = async () => {
   const api = `https://api.themoviedb.org/3/trending/all/week?language=en-US
@@ -50,13 +51,45 @@ export default function MovieList() {
   const [randomMovieTrailer, setRandomMovieTrailer] = useState(null);
   const [showTrailer, setShowTrailer] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
   const { isDark } = useThemeStore();
+
+  const { movies, removeMovie, addMovie } = useMovieStore();
+
+  const { user } = useAuthState();
+
+
+  function checkIsAdded(id) {
+    if (movies) {
+      setIsAdded(!isAdded);
+      const find = movies.find(itm => itm.id === id);
+      setIsAdded(!!find);
+    }
+  }
+
+
+
+
+
+
   const { data, isError, isLoading } = useQuery({
     queryKey: ["movies"],
     queryFn: fetchMovies,
     staleTime: 5 * 60 * 1000,
     retry: false,
   });
+
+
+
+  useEffect(() => {
+    if (randomMovie && randomMovie.id) {
+      const result = checkIsAdded(randomMovie.id);
+      if (result) {
+        setIsAdded(!!result)
+      }
+
+    }
+  }, [randomMovie?.id, movies]);
 
   useEffect(() => {
     if (data && data.length > 0) {
@@ -100,6 +133,23 @@ export default function MovieList() {
     return () => clearTimeout(timer);
   }, [randomMovie]);
 
+
+  const handleAddMovie = () => {
+    if (user && randomMovie) {
+      addMovie(user.uid, randomMovie);
+      setIsAdded(true);
+    }
+  };
+
+  const handleRemoveMovie = () => {
+    if (user && randomMovie) {
+      removeMovie(user.uid, randomMovie.id);
+      setIsAdded(false);
+    }
+  };
+
+
+
   if (isLoading) {
     return <Loader />;
   }
@@ -138,9 +188,27 @@ export default function MovieList() {
               <h1 className="text-5xl font-bold mb-4 text-white">{randomMovie.title}</h1>
               <p className="text-xl mb-6 text-white text-ellipse">{randomMovie.overview}</p>
               <div className="flex space-x-4 mb-6">
-                <button className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
-                  <Bookmark className="mr-2" /> Save
-                </button>
+                {user ?
+                  isAdded ?
+                    <button
+                      onClick={handleRemoveMovie}
+                      className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
+                      <Film className="mr-2" /> Remove from List
+                    </button>
+                    : <button
+                      onClick={handleAddMovie}
+                      className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
+                      <Bookmark className="mr-2" /> Save
+                    </button>
+
+
+                  : <Link to="/login">
+                    <button
+                      className="bg-white text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
+                      Login to save
+                    </button>
+
+                  </Link>}
                 <Link to={`/movie/${randomMovie.id}`}>
                   <button className="bg-gray-500 bg-opacity-50 text-white py-2 px-6 rounded flex items-center hover:bg-opacity-70 transition">
                     <Info className="mr-2" /> More Info
