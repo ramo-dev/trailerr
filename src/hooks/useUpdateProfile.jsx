@@ -5,9 +5,11 @@ import useAuthState from "./useAuth";
 
 const useUpdateProfile = () => {
   const { setUser, setError, error } = useAuth();
+  //Get the current user object from authState Hook 
   const { user } = useAuthState();
 
 
+  //Function to delete the current users account
   async function deleteAccount(password) {
     try {
 
@@ -29,6 +31,7 @@ const useUpdateProfile = () => {
 
 
 
+  //Function to update user info, only displayName for now
   async function updateDetails(displayName) {
     try {
       if (displayName) {
@@ -41,7 +44,7 @@ const useUpdateProfile = () => {
     }
   }
 
-
+  //Return functions and state of auth actions
   return { deleteAccount, error, updateDetails };
 };
 

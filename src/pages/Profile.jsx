@@ -16,9 +16,16 @@ export default function Settings() {
   const [form, setForm] = useState({
     displayName: '',
   })
+
+  //reference to the file input to manipulate using jsx and state
   const fileInputRef = useRef(null);
+
+
+  //a RRD hook to redirect users based on state
   const navigate = useNavigate()
 
+
+  //Placeholder function to change user profile pic
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -31,7 +38,7 @@ export default function Settings() {
   };
 
 
-
+  //function to handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prevData => ({
@@ -40,7 +47,7 @@ export default function Settings() {
     }));
   }
 
-
+  //function to handle submition 
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -57,7 +64,7 @@ export default function Settings() {
 
 
 
-
+  //placeholder function to avoid page refresh on submit
   function handleImageSub(e) {
     e.preventDefault();
   }
@@ -67,14 +74,19 @@ export default function Settings() {
 
 
 
-
+  //Placeholder function to change user profile pic
   const handleCameraClick = () => {
     fileInputRef.current.click();
   };
 
+
+  //Render loading incase of change in loading state or user fetching action
   if (loading) {
     return <Loader />
   }
+
+
+  //Redirect to home if not loading and no user, also returns null screen to avoid ui malfunctions
   if (!user && !loading) {
     navigate('/')
     return null

@@ -14,13 +14,21 @@ const Login = () => {
     email: '',
     password: '',
   });
+
+  //State of theme from useThemeStore hook
   const { isDark } = useThemeStore();
+
+  //Current user and auth actions to perform actions on user
   const { user, login, loading, error, signInWithGoogle } = useAuthState();
+
+  //Hook by RRD to redirect user based on state
   const navigate = useNavigate();
 
-
+  //function to show/hide password visibility
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
+
+  //function to handle change in input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevData => ({
@@ -29,6 +37,7 @@ const Login = () => {
     }));
   };
 
+  //Submit function to login user
   const handleSubmit = async (e) => {
     e.preventDefault();
     await login(formData.email, formData.password);
@@ -37,6 +46,7 @@ const Login = () => {
     }
   };
 
+  //side effect to redirect user to home if logged in
   useEffect(() => {
     if (user?.email) {
       navigate('/')
@@ -44,7 +54,7 @@ const Login = () => {
 
   }, [user]);
 
-
+  //Login function to add user using the google sign in with popup
   async function handleSignInWithGoogle() {
     try {
       await signInWithGoogle();

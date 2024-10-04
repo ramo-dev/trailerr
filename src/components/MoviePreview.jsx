@@ -7,62 +7,9 @@ import GoBackBtn from "./GoBackBtn";
 import Loader from "./Loading";
 import { useMovieStore, useThemeStore } from "../store/store";
 import useAuthState from "../hooks/useAuth";
-
-const fetchMovies = async (id) => {
-  const api = `https://api.themoviedb.org/3/movie/${id}`;
-  const key = import.meta.env.VITE_MOVIEDB_API_KEY;
-
-  const resp = await fetch(api, {
-    headers: {
-      Authorization: `Bearer ${key}`,
-    },
-  });
-
-  if (!resp.ok) {
-    throw new Error('Network response was not okay!');
-  }
-
-  const data = await resp.json();
-  return data;
-};
-
-async function getMovieTrailer(id) {
-  const trailerApi = `https://api.themoviedb.org/3/movie/${id}/videos`;
-  const key = import.meta.env.VITE_MOVIEDB_API_KEY;
-
-  try {
-    const resp = await fetch(trailerApi, {
-      headers: {
-        Authorization: `Bearer ${key}`,
-      },
-    });
-    const data = await resp.json();
-    return data.results.find((video) => video.type === 'Trailer');
-  } catch (err) {
-    return null;
-  }
-};
+import { getMovieTrailer, fetchMovies, fetchRelated } from "./Movies/FetchFunctions";
 
 
-const fetchRelated = async (id) => {
-  const api = `https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=1`;
-  const key = import.meta.env.VITE_MOVIEDB_API_KEY;
-
-  const resp = await fetch(api, {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization: `Bearer ${key}`
-    },
-  });
-
-  if (!resp.ok) {
-    throw new Error("Network response was not okay!");
-  }
-
-  const data = await resp.json();
-  return data.results;
-};
 
 
 export default function MoviePreview() {
@@ -74,18 +21,22 @@ export default function MoviePreview() {
   const [timeoutId, setTimeoutId] = useState(null);
   const { movies, removeMovie, addMovie } = useMovieStore();
 
+  //Get the user object on the useAuthState Hook
   const { user } = useAuthState();
 
+  //Extract data, loading state or any errors from the fetchMovies function
   const { data, isLoading, isError } = useQuery({
     queryKey: ['MovieTitle', id],
     queryFn: () => fetchMovies(id),
   });
 
+  //Extract related movies to the id and loading state from the fetchRelated function
   const { data: related, isLoading: relatedLoading } = useQuery({
     queryKey: ['Related', id],
     queryFn: () => fetchRelated(id),
   })
 
+  //A timeout in a side effect to show the trailer of the random movie trailer after some seconds
   useEffect(() => {
     const fetchTrailer = async () => {
       const trailer = await getMovieTrailer(id);
@@ -103,6 +54,9 @@ export default function MoviePreview() {
     };
   }, [id]);
 
+
+
+  //side effect to show/hide controls while scrolling
   useEffect(() => {
     function detectScreenScroll() {
       if (window.scrollY > 15) {
@@ -118,6 +72,7 @@ export default function MoviePreview() {
   }, []);
 
 
+  //side effect to navigate to top whenever the id dependancy changes
   useEffect(() => {
     // Scroll to the top when a new movie is loaded
     window.scrollTo(0, 0);
@@ -125,6 +80,7 @@ export default function MoviePreview() {
 
 
 
+  //function to check whether a movie is on the users to render isAdded actions of each preview
   function checkIsAdded(id) {
     if (movies) {
       setIsAdded(!isAdded);
@@ -133,8 +89,7 @@ export default function MoviePreview() {
     }
   }
 
-
-
+  //side effect with a function to check where the preview movie id is on the users list
   useEffect(() => {
     if (data && data.id) {
       checkIsAdded(data.id);
@@ -142,6 +97,7 @@ export default function MoviePreview() {
   }, [data?.id, movies]);
 
 
+  //Action to add movie to current userList
   const handleAddMovie = () => {
     if (user && data) {
       addMovie(user.uid, data);
@@ -149,6 +105,7 @@ export default function MoviePreview() {
     }
   };
 
+  //Action to delete a movie from the current userList
   const handleRemoveMovie = () => {
     if (user && data) {
       removeMovie(user.uid, data.id);
@@ -157,6 +114,7 @@ export default function MoviePreview() {
   };
 
 
+  //render a Loader if the data fetching state is pending
   if (isLoading) {
     return <Loader />;
   }

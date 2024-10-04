@@ -8,7 +8,6 @@ import LoginSignup from "./pages/Login";
 import Register from "./pages/Register";
 import MyList from "./pages/MyList";
 import Profile from "./pages/Profile";
-import ForgotPass from "./pages/ForgotPassWord";
 import ErrorBoundary from "./components/Error";
 import ProtectedRoute from "./components/ProtectedRoutes";
 import { Toaster } from "sonner";
@@ -24,7 +23,6 @@ const App = () => {
           <Route path="/movies" Component={Home} />
           <Route path="/login" Component={LoginSignup} />
           <Route path="/register" Component={Register} />
-          <Route path="/forgot-password" Component={ForgotPass} />
           <Route path="/movie/:id" Component={MoviePreview} />
 
           {/* Protected Routes */}

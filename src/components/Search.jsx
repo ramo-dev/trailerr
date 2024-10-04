@@ -4,35 +4,23 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { useThemeStore } from "../store/store";
+import { fetchQuery } from "./Movies/FetchFunctions";
 
-const fetchArticles = async (query) => {
-  const api = `https://api.themoviedb.org/3/search/multi?query=${query}`;
-  const key = import.meta.env.VITE_MOVIEDB_API_KEY;
-  const resp = await fetch(api, {
-    headers: {
-      Authorization: `Bearer ${key}`,
-    },
-  });
-
-  if (!resp.ok) {
-    throw new Error('Network response was not okay!');
-  }
-
-  const data = await resp.json();
-  return data.results;
-};
 
 export default function Search() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search);
-  const [sticky, setSticky] = useState(false);
-  const { isDark } = useThemeStore();
+  const { isDark } = useThemeStore();//Get current theme state
+
+  //Function to show articles in realtime while user is typing
   const { data, isLoading } = useQuery({
     queryKey: ['articles', debouncedSearch],
-    queryFn: () => fetchArticles(debouncedSearch),
+    queryFn: () => fetchQuery(debouncedSearch),
     enabled: !!debouncedSearch
   });
 
+
+  //function to delay when to show results per keystroke to prevent too many request per second
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -43,23 +31,14 @@ export default function Search() {
     };
   }, [search]);
 
+
+  //set search term from input
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
 
-  useEffect(() => {
-    function showOnScroll() {
-      if (window.scrollY > 50) {
-        setSticky(true);
-      } else {
-        setSticky(false);
-      }
-    }
 
-    window.addEventListener("scroll", showOnScroll);
 
-    return () => window.removeEventListener("scroll", showOnScroll);
-  }, []);
 
   return (
     <Dialog.Root>

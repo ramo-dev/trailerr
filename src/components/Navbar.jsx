@@ -2,13 +2,15 @@ import { Button, Avatar, IconButton, Popover, Flex, TextArea, Checkbox } from "@
 
 import Search from "./Search";
 import { Link } from "react-router-dom";
-import { Box, FilmIcon, List, Loader, LogOut, Moon, Popcorn, Sun, User } from "lucide-react";
+import { List, Loader, LogOut, Moon, Popcorn, Sun, User } from "lucide-react";
 import { useThemeStore } from "../store/store";
 import useAuthState from "../hooks/useAuth";
 
 export default function Navbar() {
 
+  //Get state and function to toggle Theme
   const { isDark, toggleTheme } = useThemeStore();
+  //Get the current user, loading state and function to log out current user
   const { user, loading, logout } = useAuthState();
 
 

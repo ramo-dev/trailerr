@@ -16,11 +16,15 @@ const Login = () => {
 
   });
   const { isDark } = useThemeStore();
-  const { error, user, register, loading, signInWithGoogle } = useAuthState();
+  const { user, register, loading, signInWithGoogle } = useAuthState();
   const navigate = useNavigate();
 
+
+  //Function to handle password visibility in the input
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
+
+  //Function to handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevData => ({
@@ -30,7 +34,7 @@ const Login = () => {
   };
 
 
-
+  //Function to handle submit and register new user
   const handleSubmit = async (e) => {
     e.preventDefault();
     //console.log("Form submit triggered", formData);  // Debug here
@@ -44,7 +48,7 @@ const Login = () => {
   };
 
 
-
+  //Firebase built in auth function to handle sign in user using goolge pop up
   async function handleSignInWithGoogle() {
     try {
       await signInWithGoogle();
@@ -54,6 +58,7 @@ const Login = () => {
     }
   }
 
+  //Side effect to redirect logged in user to last page visit
   useEffect(() => {
     if (user?.email) {
       navigate(-1)

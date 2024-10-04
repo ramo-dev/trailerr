@@ -8,54 +8,43 @@ import Loader from "../components/Loading";
 import useAuthState from "../hooks/useAuth";
 import GoBackBtn from "../components/GoBackBtn";
 import noPhoto from "../assets/nophoto.webp"
+import { fetchTrending } from "../components/Movies/FetchFunctions";
 
-const fetchAll = async () => {
-  const api = `https://api.themoviedb.org/3/trending/all/week?language=en-US`;
-  const key = import.meta.env.VITE_MOVIEDB_API_KEY;
-
-  const resp = await fetch(api, {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization: `Bearer ${key}`,
-    },
-  });
-
-  if (!resp.ok) {
-    throw new Error("Network response was not okay!");
-  }
-
-  const data = await resp.json();
-  return data.results;
-};
 
 export default function MyList() {
   const { isDark } = useThemeStore();
   const { loading, movies, removeMovie, addMovie, isAdded } = useMovieStore();
   const { user } = useAuthState();
+
+  //Fetch data, loading and error state from all movies
   const { data, isError, isLoading } = useQuery({
     queryKey: ["movies"],
-    queryFn: fetchAll,
+    queryFn: fetchTrending,
     staleTime: 5 * 60 * 1000,
     retry: false,
   });
 
-
+  //side effect to redirect the screen to top incase of a change in the movies array
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [movies])
 
+
+  //side effect to get all movies in the current users list
   useEffect(() => {
     if (user && user.uid) {
       useMovieStore.getState().fetchMovies(user?.uid);
     }
   }, [user]);
 
+
+  //Render Loading if movies are fetchin
   if (isLoading) {
     return <Loader />;
   }
 
-  if (isError) {
+  //render Error suppose movies fail to fetch
+  if (isError && !isLoading) {
     return <ErrorBoundary />;
   }
 

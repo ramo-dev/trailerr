@@ -6,15 +6,18 @@ import useAuthState from "../hooks/useAuth";
 import { toast } from "sonner";
 
 const DeleteDialog = () => {
+  //function and error state to update the use info
   const { deleteAccount, error } = useUpdateProfile();  // Added error state for better feedback
   const { isDark } = useThemeStore();
   const { loading } = useAuthState();
   const [confirmed, setConfirmed] = useState(false);
-  const [password, setPassword] = useState("");  // Added password state
+  const [password, setPassword] = useState("");
 
 
+  //function to delete the user account within component
   const handleDelete = async () => {
     if (confirmed && password) {
+      //Get response once the request is accepted or has failed
       const { success, message } = await deleteAccount(password);
 
       if (!success) {

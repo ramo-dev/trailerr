@@ -7,44 +7,9 @@ import ErrorBoundary from "./Error";
 import Loader from "./Loading";
 import { useMovieStore, useThemeStore } from "../store/store";
 import useAuthState from "../hooks/useAuth";
+import { fetchTrending, getMovieTrailer } from "./Movies/FetchFunctions";
 
-const fetchMovies = async () => {
-  const api = `https://api.themoviedb.org/3/trending/all/week?language=en-US
-`;
-  const key = import.meta.env.VITE_MOVIEDB_API_KEY;
 
-  const resp = await fetch(api, {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization: `Bearer ${key}`
-    },
-  });
-
-  if (!resp.ok) {
-    throw new Error("Network response was not okay!");
-  }
-
-  const data = await resp.json();
-  return data.results;
-};
-
-async function getMovieTrailer(id) {
-  const trailerApi = `https://api.themoviedb.org/3/movie/${id}/videos`;
-  const key = import.meta.env.VITE_MOVIEDB_API_KEY;
-
-  try {
-    const resp = await fetch(trailerApi, {
-      headers: {
-        Authorization: `Bearer ${key}`,
-      },
-    });
-    const data = await resp.json();
-    return data.results.find((video) => video.type === 'Trailer');
-  } catch (err) {
-    return null;
-  }
-}
 
 export default function MovieList() {
   const [randomMovie, setRandomMovie] = useState(null);
@@ -54,11 +19,14 @@ export default function MovieList() {
   const [isAdded, setIsAdded] = useState(false);
   const { isDark } = useThemeStore();
 
+  //Get current users movies and actions to perform crud operations
   const { movies, removeMovie, addMovie } = useMovieStore();
 
+  //fetch the user object containing the current users info
   const { user } = useAuthState();
 
 
+  //Function to check if movie is in the users list, returns an object converted to boolean
   function checkIsAdded(id) {
     if (movies) {
       setIsAdded(!isAdded);
@@ -68,29 +36,17 @@ export default function MovieList() {
   }
 
 
-
-
-
-
+  //Extract data, loading state or any errors from the fetchMovies function
   const { data, isError, isLoading } = useQuery({
     queryKey: ["movies"],
-    queryFn: fetchMovies,
+    queryFn: fetchTrending,
     staleTime: 5 * 60 * 1000,
     retry: false,
   });
 
 
 
-  useEffect(() => {
-    if (randomMovie && randomMovie.id) {
-      const result = checkIsAdded(randomMovie.id);
-      if (result) {
-        setIsAdded(!!result)
-      }
-
-    }
-  }, [randomMovie?.id, movies]);
-
+  //Function to fetch and display a random movie in the hero section
   useEffect(() => {
     if (data && data.length > 0) {
       const random = Math.floor(Math.random() * data.length);
@@ -105,7 +61,20 @@ export default function MovieList() {
   }, [data]);
 
 
+  //side effect with a function to check where the preview movie id is on the users list
+  useEffect(() => {
+    if (randomMovie && randomMovie.id) {
+      const result = checkIsAdded(randomMovie.id);
+      if (result) {
+        setIsAdded(!!result)
+      }
 
+    }
+  }, [randomMovie?.id, movies]);
+
+
+
+  //side effect to show/hide controls while scrolling
   useEffect(() => {
     function detectScreenScroll() {
       if (window.scrollY > 15) {
@@ -123,6 +92,7 @@ export default function MovieList() {
 
 
 
+  //A timeout in a side effect to show the trailer of the random movie trailer after some seconds
   useEffect(() => {
     let timer;
     if (randomMovie) {
@@ -134,6 +104,7 @@ export default function MovieList() {
   }, [randomMovie]);
 
 
+  //Action to add movie to current userList
   const handleAddMovie = () => {
     if (user && randomMovie) {
       addMovie(user.uid, randomMovie);
@@ -141,6 +112,8 @@ export default function MovieList() {
     }
   };
 
+
+  //Action to delete a movie from the current userList
   const handleRemoveMovie = () => {
     if (user && randomMovie) {
       removeMovie(user.uid, randomMovie.id);
@@ -150,10 +123,12 @@ export default function MovieList() {
 
 
 
+  //render a Loader if the data fetching state is pending
   if (isLoading) {
     return <Loader />;
   }
 
+  //render an Error Image if the data fetching state returns an Error
   if (isError) {
     return <ErrorBoundary />;
   }

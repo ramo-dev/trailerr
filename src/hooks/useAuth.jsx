@@ -5,8 +5,10 @@ import { signInWithPopup } from "firebase/auth";
 
 
 const useAuthState = () => {
+  //Get  actions and states from the authStore
   const { user, loading, error, setUser, login, logout, register, setError } = useAuth();
 
+  //side effect to check whether user is logged in on component mount and update the user using the setUser func
   useEffect(() => {
     const unsub = account?.onAuthStateChanged((user) => {
       if (user) {
@@ -20,6 +22,9 @@ const useAuthState = () => {
     return () => unsub();
   }, [setUser]);
 
+
+
+  //Auth function to sign the user in with Google Popup
   async function signInWithGoogle() {
     const result = await signInWithPopup(account, googleProvider);
     if (result) {
@@ -30,6 +35,7 @@ const useAuthState = () => {
     }
   }
 
+  //Return the current state and functions to perform auth actions on user
   return { user, loading, error, setUser, login, logout, register, signInWithGoogle }
 };
 
