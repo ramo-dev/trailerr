@@ -299,7 +299,7 @@ export default function MoviePreview() {
       <div className="md:px-10 px-2 mx-auto flex flex-wrap gap-6 w-full">
         {relatedLoading ? <div className="mx-auto"><Loader /></div> :
           related ? related.map((item) => (
-            <Link to={`/movie/${item.id}`} key={item.id}>
+            <Link to={`/movie/${item.id}`} key={item.id} className=" flex-1 min-w-[380px]">
               <div className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out`}>
                 <img
                   loading="lazy"

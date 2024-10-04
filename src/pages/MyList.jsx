@@ -73,7 +73,7 @@ export default function MyList() {
             :
             movies.length > 0 ? (
               movies.map((item) => (
-                <div key={item.id} className={`${isDark ? "bg-black border-neutral-800 " : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out`}>
+                <div key={item.id} className={`${isDark ? "bg-black border-neutral-800 " : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-max transition-all duration-200 ease-in-out flex-1 min-w-[380px]`}>
                   <Link to={`/movie/${item.id}`} key={item.id}>
                     <div className="h-full">
                       <img
@@ -94,15 +94,10 @@ export default function MyList() {
                     </div>
                   </Link>
                   <div className="flex gap-2">
-                    <Link to={`/movie/${item.id}`} key={item.id} className="w-4/5 flex">
-                      <button
-                        className="mx-auto mt-4 bg-gray-300 text-black py-2 w-full px-6 rounded flex items-center hover:bg-opacity-80 transition">
-                        <Info className="mr-2" /> View
-                      </button>
-                    </Link>
+
                     <button
                       onClick={() => removeMovie(user.uid, item.id)}
-                      className="mt-4 bg-red-500 w-2/3 text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
+                      className="mt-4 bg-red-500 w-full text-black py-2 px-6 rounded flex items-center hover:bg-opacity-80 transition">
                       <Trash className="mr-2" /> Delete
                     </button>
                   </div>
@@ -116,12 +111,12 @@ export default function MyList() {
 
       {/* Trending Movies Section */}
       <div className={`${isDark ? "bg-black py-10 text-white" : "bg-white py-10"} transition-all duration-200 ease-in-out`}>
-        <h1 className="text-4xl my-8 md:ms-10 ms-2 font-bold">Recommended Movies </h1>
+        <h1 className="text-4xl my-24 md:ms-10 ms-2 font-bold">Recommended Movies </h1>
         <div className="md:px-10 px-2 mx-auto flex flex-wrap gap-6 w-full">
           {data ? (
 
             data.map((item) => (
-              <div key={item.id} className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out`}>
+              <div key={item.id} className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out flex-1 min-w-[380px]`}>
                 <Link to={`/movie/${item.id}`} key={item.id}>
                   <div className="h-full" >
                     <img
