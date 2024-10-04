@@ -73,7 +73,7 @@ export default function MyList() {
             :
             movies.length > 0 ? (
               movies.map((item) => (
-                <div key={item.id} className={`${isDark ? "bg-black border-neutral-800 " : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-max transition-all duration-200 ease-in-out flex-1 min-w-[380px]`}>
+                <div key={item.id} className={`${isDark ? "bg-black border-neutral-800 " : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-max transition-all duration-200 ease-in-out flex-1 min-w-[280px] w-full`}>
                   <Link to={`/movie/${item.id}`} key={item.id}>
                     <div className="h-full">
                       <img
@@ -116,7 +116,7 @@ export default function MyList() {
           {data ? (
 
             data.map((item) => (
-              <div key={item.id} className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out flex-1 min-w-[380px]`}>
+              <div key={item.id} className={`${isDark ? "bg-black border-neutral-800" : "bg-white border-gray-300"} border p-4 hover:shadow-md md:max-w-[400px] h-full transition-all duration-200 ease-in-out flex-1 min-w-[280px] w-full`}>
                 <Link to={`/movie/${item.id}`} key={item.id}>
                   <div className="h-full" >
                     <img
